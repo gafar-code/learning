@@ -293,9 +293,8 @@ class _ListingPrinterState extends State<ListingPrinter> {
 
   Container _buildFloatingActionButton() {
     return Container(
-      padding: const EdgeInsets.only(right: 20, bottom: 20, left: 20),
+      padding: EdgeInsets.only(left: 80, bottom: 10),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           FloatingActionButton(
             onPressed: printAction,
