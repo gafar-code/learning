@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:learning/10_listing/105_listing_printer.dart';
 import '../10_home.dart';
 import '../00_standard/11_home_drawer.dart';
 import '../00_standard/12_function.dart' as rx_function;
@@ -110,10 +111,14 @@ class _ListingPageState extends State<ListingPage> {
                   ),
                   CategoryCard(Icons.notifications, 'Notification', () => {}),
                   CategoryCard(
-                    Icons.library_add_check_rounded,
-                    'Document' + '\n' + 'Print Address',
-                    () => {},
-                  ),
+                      Icons.library_add_check_rounded,
+                      'Document' + '\n' + 'Print Address',
+                      () => {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ListingPrinter()))
+                          }),
                   CategoryCard(
                     Icons.attach_money,
                     'Koperasi',

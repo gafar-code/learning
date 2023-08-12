@@ -1,21 +1,27 @@
-import 'package:flutter/material.dart';
+import 'dart:developer';
+
 import 'package:bluetooth_thermal_printer/bluetooth_thermal_printer.dart';
 import 'package:esc_pos_utils/esc_pos_utils.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:learning/models/data_termal_model.dart';
+import 'package:learning/utils/helpers.dart';
 
-import '../00_standard/12_function.dart' as rx_function;
 import '../00_customs/10_customs.dart' as rx_customs;
+import '../00_standard/12_function.dart' as rx_function;
 
 class RisetBluettothThermalPrinterPage extends StatefulWidget {
+  const RisetBluettothThermalPrinterPage({super.key, required this.data});
+
+  final DataThermalModel data;
+
   @override
-  State<RisetBluettothThermalPrinterPage> createState() =>
-      _RisetBluettothThermalPrinterState();
+  State<RisetBluettothThermalPrinterPage> createState() => _RisetBluettothThermalPrinterState();
 }
 
-class _RisetBluettothThermalPrinterState
-    extends State<RisetBluettothThermalPrinterPage> {
+class _RisetBluettothThermalPrinterState extends State<RisetBluettothThermalPrinterPage> {
   String _entryName = 'NONE';
   String _entryMac = 'NONE';
   String lat = '';
@@ -42,41 +48,39 @@ class _RisetBluettothThermalPrinterState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Canvas Print"),
+        title: const Text("Canvas Print"),
         backgroundColor: rx_customs.RexColors.BarColor,
       ),
       backgroundColor: rx_customs.RexColors.BackGround,
-      body: Container(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ListView(
-            children: <Widget>[
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _cardGroup(context),
-                  _cardBlank(context),
-                ],
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListView(
+          children: <Widget>[
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _cardGroup(context),
+                _cardBlank(context),
+              ],
+            ),
+            const SizedBox(height: 50),
+            _connected
+                ? Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Text(
+                      "Connected : $_entryName",
+                    ),
+                  )
+                : const SizedBox(),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: ElevatedButton(
+                onPressed: !_connected ? null : _print,
+                child: const Text('PRINT', style: TextStyle(color: Colors.white)),
               ),
-              SizedBox(height: 50),
-              _connected
-                  ? Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Text(
-                        "Connected : " + _entryName,
-                      ),
-                    )
-                  : SizedBox(),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: ElevatedButton(
-                  onPressed: !_connected ? null : _print,
-                  child: Text('PRINT', style: TextStyle(color: Colors.white)),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -94,30 +98,24 @@ class _RisetBluettothThermalPrinterState
               children: [
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
+                  padding: const EdgeInsets.all(5),
+                  decoration: const BoxDecoration(
                     color: rx_customs.RexColors.CardHeader,
                     borderRadius: BorderRadius.vertical(
                       top: Radius.circular(5),
                     ),
                   ),
-                  child: Text(
+                  child: const Text(
                     "Printer",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12),
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
                     textAlign: TextAlign.center,
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.all(6),
+                  padding: const EdgeInsets.all(6),
                   child: Text(
                     _entryName,
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: rx_function.RexColors.AppBar),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: rx_function.RexColors.AppBar),
                   ),
                 )
               ],
@@ -133,7 +131,7 @@ class _RisetBluettothThermalPrinterState
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          content: Container(
+          content: SizedBox(
             height: 300,
             width: double.minPositive,
             child: ListView.builder(
@@ -171,10 +169,9 @@ class _RisetBluettothThermalPrinterState
         child: GestureDetector(
           onTap: () => _showGroupDialog(),
           child: Card(
-            margin: EdgeInsets.fromLTRB(20, 25, 20, 5),
+            margin: const EdgeInsets.fromLTRB(20, 25, 20, 5),
             child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: _connected ? Colors.red : Colors.green),
+              style: ElevatedButton.styleFrom(backgroundColor: _connected ? Colors.red : Colors.green),
               onPressed: _entryName == 'NONE'
                   ? null
                   : _connected
@@ -182,7 +179,7 @@ class _RisetBluettothThermalPrinterState
                       : _connect,
               child: Text(
                 _connected ? 'Disconnect' : 'Connect',
-                style: TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.white),
               ),
             ),
           ),
@@ -200,25 +197,22 @@ class _RisetBluettothThermalPrinterState
     });
 
     try {
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
+      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
 
       lat = position.latitude.toString();
       long = position.longitude.toString();
-      cLocation = lat + ',' + long;
+      cLocation = '$lat,$long';
 
       try {
-        List<Placemark> newPlace = await placemarkFromCoordinates(
-            position.latitude, position.longitude);
+        List<Placemark> newPlace = await placemarkFromCoordinates(position.latitude, position.longitude);
         Placemark placeMark = newPlace[0];
         String cSubLocality = placeMark.subLocality.toString();
         String cLocality = placeMark.locality.toString();
-        String cSubAdministrativeArea =
-            placeMark.subAdministrativeArea.toString();
+        String cSubAdministrativeArea = placeMark.subAdministrativeArea.toString();
         String cPostalCode = placeMark.postalCode.toString();
 
-        cAddress1 = cSubLocality + ', ' + cLocality;
-        cAddress2 = cSubAdministrativeArea + ', ' + cPostalCode;
+        cAddress1 = '$cSubLocality, $cLocality';
+        cAddress2 = '$cSubAdministrativeArea, $cPostalCode';
       } catch (e) {
         cAddress1 = '.';
         cAddress2 = '.';
@@ -230,15 +224,14 @@ class _RisetBluettothThermalPrinterState
   }
 
   void _connect() async {
-    print('string ' + _entryMac);
     if (_entryMac == 'NONE') {
-      print("Cannot Connect");
+      log("Cannot Connect");
       _showErrorDialog(context, "Choose Printer First");
     } else {
       try {
         await BluetoothThermalPrinter.connect(_entryMac);
       } on PlatformException catch (e) {
-        print(e.toString());
+        log(e.toString());
         setState(() => _connected = false);
       }
       setState(() => _connected = true);
@@ -249,62 +242,53 @@ class _RisetBluettothThermalPrinterState
     try {
       await BluetoothThermalPrinter.connect(_entryMac);
     } on PlatformException catch (e) {
-      print(e.toString());
+      log(e.toString());
       setState(() => _connected = false);
     }
     setState(() => _connected = true);
   }
 
   void _print() async {
+    int total = 0;
+
     if (_entryMac == 'NONE') {
       _showErrorDialog(context, "Choose Printer First");
       return;
     }
-    String? isConnected = await BluetoothThermalPrinter.connectionStatus;
-    print("hello " + isConnected.toString());
 
     List<int> bytes = [];
     CapabilityProfile profile = await CapabilityProfile.load();
     final generator = Generator(PaperSize.mm58, profile);
 
-    bytes += generator.text("",
-        styles: PosStyles(align: PosAlign.center), linesAfter: 1);
+    bytes += generator.text("", styles: const PosStyles(align: PosAlign.center), linesAfter: 1);
 
 // HEADER
     bytes += generator.text(
-      "PT. MERAPI MAJU MAKMUR",
-      styles: PosStyles(
-          align: PosAlign.center,
-          height: PosTextSize.size1,
-          width: PosTextSize.size1,
-          bold: true),
+      widget.data.name,
+      styles: const PosStyles(align: PosAlign.center, height: PosTextSize.size1, width: PosTextSize.size1, bold: true),
     );
 
     bytes += generator.text(
-      "JAKARTA",
-      styles: PosStyles(
-          align: PosAlign.center,
-          height: PosTextSize.size1,
-          width: PosTextSize.size1,
-          bold: true),
+      widget.data.province,
+      styles: const PosStyles(align: PosAlign.center, height: PosTextSize.size1, width: PosTextSize.size1, bold: true),
     );
     bytes += generator.hr();
 
 // SUBHEADER-1 [LEFT-RIGHT]
     bytes += generator.row([
       PosColumn(
-        text: 'Sales: Agus',
+        text: 'Sales: ${widget.data.sales}',
         width: 6,
-        styles: PosStyles(
+        styles: const PosStyles(
           align: PosAlign.left,
           height: PosTextSize.size1,
           width: PosTextSize.size1,
         ),
       ),
       PosColumn(
-        text: "08/Agt/2023",
+        text: widget.data.date,
         width: 6,
-        styles: PosStyles(
+        styles: const PosStyles(
           align: PosAlign.right,
           height: PosTextSize.size1,
           width: PosTextSize.size1,
@@ -314,151 +298,81 @@ class _RisetBluettothThermalPrinterState
 
     bytes += generator.row([
       PosColumn(
-        text: 'AGS-00012/230808',
+        text: widget.data.codeSales,
         width: 6,
-        styles: PosStyles(
+        styles: const PosStyles(
           align: PosAlign.left,
           height: PosTextSize.size1,
           width: PosTextSize.size1,
         ),
       ),
       PosColumn(
-          text: "10:23",
+          text: widget.data.time,
           width: 6,
-          styles: PosStyles(
+          styles: const PosStyles(
             align: PosAlign.right,
             height: PosTextSize.size1,
             width: PosTextSize.size1,
           )),
     ]);
-    bytes += generator.text('', styles: PosStyles(align: PosAlign.left));
+    bytes += generator.text('', styles: const PosStyles(align: PosAlign.left));
 
 // SUBHEADER-2
     bytes += generator.row([
-      PosColumn(
-          text: 'Keterangan',
-          width: 8,
-          styles: PosStyles(align: PosAlign.left, bold: true)),
-      PosColumn(
-          text: 'Jumlah',
-          width: 4,
-          styles: PosStyles(align: PosAlign.right, bold: true)),
+      PosColumn(text: 'Keterangan', width: 8, styles: const PosStyles(align: PosAlign.left, bold: true)),
+      PosColumn(text: 'Jumlah', width: 4, styles: const PosStyles(align: PosAlign.right, bold: true)),
     ]);
     bytes += generator.hr();
 
 // DETAIL
-    bytes += generator.row([
-      PosColumn(text: "1", width: 1),
-      PosColumn(
-          text: "Lemari 2 Pintu",
-          width: 7,
-          styles: PosStyles(
-            align: PosAlign.left,
-          )),
-      PosColumn(text: "", width: 4, styles: PosStyles(align: PosAlign.right)),
-    ]);
-    bytes += generator.row([
-      PosColumn(text: "", width: 1),
-      PosColumn(
-          text: "10 Pcs  x 15.000",
-          width: 7,
-          styles: PosStyles(
-            align: PosAlign.left,
-          )),
-      PosColumn(
-          text: "150.000", width: 4, styles: PosStyles(align: PosAlign.right)),
-    ]);
+    for (int i = 0; i < widget.data.items.length; i++) {
+      Item item = widget.data.items[i];
 
-    bytes += generator.text('');
+      total += (item.quantity * item.price);
 
-    bytes += generator.row([
-      PosColumn(text: "2", width: 1),
-      PosColumn(
-          text: "Kursi Lebar",
-          width: 7,
-          styles: PosStyles(
-            align: PosAlign.left,
-          )),
-      PosColumn(text: "", width: 4, styles: PosStyles(align: PosAlign.right)),
-    ]);
-    bytes += generator.row([
-      PosColumn(text: "", width: 1),
-      PosColumn(
-          text: "5 Pcs  x 7.000",
-          width: 7,
-          styles: PosStyles(
-            align: PosAlign.left,
-          )),
-      PosColumn(
-          text: "35.000", width: 4, styles: PosStyles(align: PosAlign.right)),
-    ]);
+      bytes += generator.row([
+        PosColumn(text: "${i + 1}", width: 1),
+        PosColumn(
+            text: item.name,
+            width: 7,
+            styles: const PosStyles(
+              align: PosAlign.left,
+            )),
+        PosColumn(text: "", width: 4, styles: const PosStyles(align: PosAlign.right)),
+      ]);
 
-    bytes += generator.text('', styles: PosStyles(align: PosAlign.left));
+      bytes += generator.row([
+        PosColumn(text: "", width: 1),
+        PosColumn(
+            text: "${item.quantity} Pcs  x ${formatCurrency(item.price)}",
+            width: 7,
+            styles: const PosStyles(
+              align: PosAlign.left,
+            )),
+        PosColumn(text: "${item.quantity * item.price}", width: 4, styles: const PosStyles(align: PosAlign.right)),
+      ]);
 
-    bytes += generator.row([
-      PosColumn(text: "3", width: 1),
-      PosColumn(
-          text: "Kunci",
-          width: 7,
-          styles: PosStyles(
-            align: PosAlign.left,
-          )),
-      PosColumn(text: "", width: 4, styles: PosStyles(align: PosAlign.right)),
-    ]);
-    bytes += generator.row([
-      PosColumn(text: "", width: 1),
-      PosColumn(
-          text: "1 Pcs  x 5.000",
-          width: 7,
-          styles: PosStyles(
-            align: PosAlign.left,
-          )),
-      PosColumn(
-          text: "5.000", width: 4, styles: PosStyles(align: PosAlign.right)),
-    ]);
-
-    bytes += generator.text('', styles: PosStyles(align: PosAlign.left));
-
-    bytes += generator.row([
-      PosColumn(text: "4", width: 1),
-      PosColumn(
-          text: "Tambahan",
-          width: 7,
-          styles: PosStyles(
-            align: PosAlign.left,
-          )),
-      PosColumn(text: "", width: 4, styles: PosStyles(align: PosAlign.right)),
-    ]);
-    bytes += generator.row([
-      PosColumn(text: "", width: 1),
-      PosColumn(
-          text: "1 Pcs  x 1.200.000",
-          width: 7,
-          styles: PosStyles(
-            align: PosAlign.left,
-          )),
-      PosColumn(
-          text: "1.200.000",
-          width: 4,
-          styles: PosStyles(align: PosAlign.right)),
-    ]);
-
-    bytes += generator.hr();
+      if (i == widget.data.items.length) {
+        bytes += generator.hr();
+      } else {
+        bytes += generator.text('', styles: const PosStyles(align: PosAlign.left));
+      }
+    }
 
 // FOOTER
     bytes += generator.row([
       PosColumn(
           text: 'TOTAL',
           width: 3,
-          styles: PosStyles(
+          styles: const PosStyles(
             align: PosAlign.left,
             height: PosTextSize.size1,
             width: PosTextSize.size1,
           )),
       PosColumn(
-          text: "1.390.000",
+          text: formatCurrency(total),
           width: 9,
-          styles: PosStyles(
+          styles: const PosStyles(
             align: PosAlign.right,
             height: PosTextSize.size2,
             width: PosTextSize.size2,
@@ -466,50 +380,29 @@ class _RisetBluettothThermalPrinterState
     ]);
     bytes += generator.hr(ch: '=', linesAfter: 1);
 
-    bytes += generator.text('Terima Kasih',
-        styles: PosStyles(align: PosAlign.center, bold: true));
+    bytes += generator.text('Terima Kasih', styles: const PosStyles(align: PosAlign.center, bold: true));
     bytes += generator.text('');
 
-    bytes += generator.qrcode('NomoruntukQRISDinamic');
+    bytes += generator.qrcode(widget.data.qrcode);
     bytes += generator.hr();
-    bytes += generator.text(cAddress1, styles: PosStyles(align: PosAlign.left));
-    bytes += generator.text(cAddress2, styles: PosStyles(align: PosAlign.left));
+    bytes += generator.text(cAddress1, styles: const PosStyles(align: PosAlign.left));
+    bytes += generator.text(cAddress2, styles: const PosStyles(align: PosAlign.left));
 
     bytes += generator.text('');
     bytes += generator.text('');
-    var result = await BluetoothThermalPrinter.writeBytes(bytes);
-  }
 
-  void _print2() async {
-    if (_entryMac == 'NONE') {
-      _showErrorDialog(context, "Choose Printer First");
-      return;
-    }
-    String? isConnected = await BluetoothThermalPrinter.connectionStatus;
-    print("hello " + isConnected.toString());
-
-    List<int> bytes = [];
-    CapabilityProfile profile = await CapabilityProfile.load();
-    final generator = Generator(PaperSize.mm58, profile);
-// Print QR Code using native function
-    bytes += generator.qrcode('example.com');
-    bytes += generator.hr();
-// Print Barcode using native function
-    final List<int> barData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 4];
-    bytes += generator.barcode(Barcode.upcA(barData));
-    bytes += generator.cut();
-    var result = await BluetoothThermalPrinter.writeBytes(bytes);
+    await BluetoothThermalPrinter.writeBytes(bytes);
   }
 
   Future _showErrorDialog(BuildContext context, _message) {
     return showDialog(
       builder: (context) {
         return AlertDialog(
-          title: Text('Warning'),
+          title: const Text('Warning'),
           content: Text(_message),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
