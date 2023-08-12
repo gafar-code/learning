@@ -5,7 +5,7 @@ import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:intl/intl.dart';
-import 'package:learning/10_listing/106_listing_pdf.dart';
+// import 'package:learning/10_listing/106_listing_pdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:screenshot/screenshot.dart';
@@ -88,27 +88,25 @@ class _ListingPrinterState extends State<ListingPrinter> {
   void printAction() {}
 
   void shareWAAction() async {
-    final image =
-        await controller.capture(delay: const Duration(milliseconds: 5));
+    final image = await controller.capture(delay: const Duration(milliseconds: 5));
     if (image != null) {
       await saveAndShare(image);
     } else {}
   }
 
-  void downloadAction() async {
-    final image =
-        await controller.capture(delay: const Duration(milliseconds: 5));
-    if (image != null) {
-      await saveImage(image);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Screenshot downloaded successfully')),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to capture screenshot')),
-      );
-    }
-  }
+  // void downloadAction() async {
+  //   final image = await controller.capture(delay: const Duration(milliseconds: 5));
+  //   if (image != null) {
+  //     await saveImage(image);
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text('Screenshot downloaded successfully')),
+  //     );
+  //   } else {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text('Failed to capture screenshot')),
+  //     );
+  //   }
+  // }
 
   Future saveAndShare(Uint8List bytes) async {
     final directory = await getApplicationDocumentsDirectory();
@@ -120,18 +118,14 @@ class _ListingPrinterState extends State<ListingPrinter> {
 
   Future<String> saveImage(Uint8List bytes) async {
     await [Permission.storage].request();
-    final time = DateTime.now()
-        .toIso8601String()
-        .replaceAll('.', '_')
-        .replaceAll(':', '_');
+    final time = DateTime.now().toIso8601String().replaceAll('.', '_').replaceAll(':', '_');
     final name = "transaction_$time";
     final result = await ImageGallerySaver.saveImage(bytes, name: name);
     return result['filePath'];
   }
 
   String formatCurrency(int amount) {
-    final formatCurrency =
-        NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ');
+    final formatCurrency = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ');
     return formatCurrency.format(amount);
   }
 
@@ -309,9 +303,11 @@ class _ListingPrinterState extends State<ListingPrinter> {
           ),
           const SizedBox(width: 40),
           FloatingActionButton(
-            onPressed: downloadAction,
-            tooltip: 'Download',
-            child: const Icon(Icons.download),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            tooltip: 'Exit',
+            child: const Icon(Icons.exit_to_app),
           ),
         ],
       ),
@@ -407,10 +403,7 @@ class _ListingPrinterState extends State<ListingPrinter> {
           alignment: Alignment.bottomLeft,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Pluit, Penjaringan"),
-              Text("Norh Jakarta City,14450")
-            ],
+            children: [Text("Pluit, Penjaringan"), Text("Norh Jakarta City,14450")],
           ),
         ),
         const SizedBox(
@@ -449,11 +442,9 @@ Transaction transactionOne = Transaction(
   nameSalesStore: "nameSalesStore",
   noTrasactionStore: "ASDFPOIU09",
   product: [
-    Product(
-        nameProduct: "Asinan Sayur", priceProduct: 30000, totalOrderProduct: 2),
+    Product(nameProduct: "Asinan Sayur", priceProduct: 30000, totalOrderProduct: 2),
     Product(nameProduct: "Air", priceProduct: 30000, totalOrderProduct: 1),
-    Product(
-        nameProduct: "Handpone", priceProduct: 4000000, totalOrderProduct: 3),
+    Product(nameProduct: "Handpone", priceProduct: 4000000, totalOrderProduct: 3),
   ],
 );
 

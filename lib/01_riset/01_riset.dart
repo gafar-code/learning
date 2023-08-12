@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:learning/01_riset/01_show_data.dart';
+import 'package:learning/constants/constants.dart';
 
 import '../10_home.dart';
 import '../00_standard/11_home_drawer.dart';
@@ -58,74 +60,42 @@ class _RisetPageState extends State<RisetPage> {
                   CategoryCard(
                     Icons.corporate_fare_rounded,
                     'Device Info',
-                    () => {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => HomeAboutDeviceInfoPage()))
-                    },
+                    () => Navigator.push(context, MaterialPageRoute(builder: (context) => HomeAboutDeviceInfoPage())),
                   ),
                   CategoryCard(
                     Icons.image_rounded,
                     'Flutter' + '\n' + 'Blue Plus',
-                    () => {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => HomeAboutBluetoothPage()))
-                    },
+                    () => Navigator.push(context, MaterialPageRoute(builder: (context) => HomeAboutBluetoothPage())),
                   ),
                   CategoryCard(
                     Icons.settings,
                     'Geo Location',
-                    () => {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => HomeAboutLocationPage()))
-                    },
+                    () => Navigator.push(context, MaterialPageRoute(builder: (context) => HomeAboutLocationPage())),
                   ),
                   CategoryCard(
                     Icons.library_add_check_rounded,
                     'Barcode' + '\n' + 'Scanner',
-                    () => {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => HomeAboutQRScannerPage()))
-                    },
+                    () => Navigator.push(context, MaterialPageRoute(builder: (context) => HomeAboutQRScannerPage())),
                   ),
                   CategoryCard(
                     Icons.library_add_check_rounded,
                     'Blue Thermal' + '\n' + 'Printer',
-                    () => {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  RisetBlueThermalPrinterPage()))
-                    },
+                    () => Navigator.push(context, MaterialPageRoute(builder: (context) => RisetBlueThermalPrinterPage())),
                   ),
                   CategoryCard(
                     Icons.library_add_check_rounded,
                     'Bluetooth' + '\n' + 'Print',
-                    () => {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => RisetBluettothPrintPage()))
-                    },
+                    () => Navigator.push(context, MaterialPageRoute(builder: (context) => RisetBluettothPrintPage())),
                   ),
                   CategoryCard(
                     Icons.library_add_check_rounded,
                     'Bluetooth Thermal' + '\n' + 'Printer',
-                    () => {
-                      Navigator.push(
+                    () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  RisetBluettothThermalPrinterPage()))
-                    },
+                              builder: (context) => ShowPrinterData(
+                                    data: dataDummy,
+                                  ))),
                   ),
                   // CategoryCard(
                   //   Icons.library_add_check_rounded,

@@ -37,6 +37,7 @@ dependencies:
   image: ^3.0.8
   image_gallery_saver: ^1.6.9
   image_picker: ^0.8.5+3
+  intl: ^0.17.0
   lecle_downloads_path_provider: ^0.0.2+8
   open_file: ^3.3.2
   package_info_plus: ^3.0.2

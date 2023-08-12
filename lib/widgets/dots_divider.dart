@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 class DotsDivider extends StatelessWidget {
   const DotsDivider({
     super.key,
+    this.height,
   });
+
+  final double? height;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 1,
+      height: height ?? 1,
       width: MediaQuery.of(context).size.width,
       child: CustomPaint(
         painter: DottedLinePainter(),
